@@ -19,6 +19,7 @@ import {
     Tag,
     TagSection
 } from '@paperback/types'
+import * as cheerio from 'cheerio'
 
 import {
     isLastPage,
@@ -42,10 +43,10 @@ import {
     resetSettings
 } from './BatoToSettings'
 
-const BATO_DOMAIN = 'https://batocomic.org'
+const BATO_DOMAIN = 'https://bato.to'
 
 export const BatoToInfo: SourceInfo = {
-    version: '3.1.4',
+    version: '3.1.5-striker4150',
     name: 'BatoTo',
     icon: 'icon.png',
     author: 'niclimcy',
@@ -64,7 +65,7 @@ export const BatoToInfo: SourceInfo = {
 
 export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 
-    constructor(private cheerio: CheerioAPI) { }
+    constructor(private cheerio: cheerio.CheerioAPI) { }
 
     requestManager = App.createRequestManager({
         requestsPerSecond: 4,

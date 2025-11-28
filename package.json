@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "bundle": "npx paperback bundle",
+    "logcat": "npx paperback logcat",
     "serve": "npx paperback serve",
     "test": "npx paperback test",
     "nodemon": "nodemon"
@@ -23,7 +24,9 @@
   "dependencies": {
     "@paperback/toolchain": "^0.8.7",
     "@paperback/types": "^0.8.7",
+    "@types/crypto-js": "^4.2.2",
     "cheerio": "^1.0.0",
+    "crypto-js": "^4.2.0",
     "html-entities": "^2.5.2"
   }
 }

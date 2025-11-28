@@ -14,10 +14,13 @@ import {
     BTLanguages
 } from './BatoToHelper'
 
-import * as CryptoJS from './external/crypto-js.min' // 4.2.0
+import { CheerioAPI } from 'cheerio'
+import CryptoJS from 'crypto-js'
+import { Element } from 'domhandler'
+
 import entities = require('entities')
 
-export const parseMangaDetails = ($: CheerioStatic, mangaId: string): SourceManga => {
+export const parseMangaDetails = ($: CheerioAPI, mangaId: string): SourceManga => {
     const titles: string[] = []
 
     titles.push(decodeHTMLEntity($('a', $('.item-title')).text().trim() ?? ''))
@@ -29,12 +32,12 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): SourceMang
     const description = decodeHTMLEntity($('.limit-html').text().trim() ?? '')
 
     const authorElement = $('div.attr-item b:contains("Authors")').next('span')
-    const author = authorElement.length ? authorElement.children().map((_: number, e: CheerioElement) => {
+    const author = authorElement.length ? authorElement.children().map((_: number, e: Element) => {
         return $(e).text().trim()
     }).toArray().join(', ') : ''
 
     const artistElement = $('div.attr-item b:contains("Artists")').next('span')
-    const artist = artistElement.length ? artistElement.children().map((_: number, e: CheerioElement) => {
+    const artist = artistElement.length ? artistElement.children().map((_: number, e: Element) => {
         return $(e).text().trim()
     }).toArray().join(', ') : ''
 
@@ -79,7 +82,7 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): SourceMang
     })
 }
 
-export const parseChapterList = ($: CheerioStatic, mangaId: string): Chapter[] => {
+export const parseChapterList = ($: CheerioAPI, mangaId: string): Chapter[] => {
     const chapters: Chapter[] = []
     let sortingIndex = 0
 
@@ -127,15 +130,21 @@ export const parseChapterList = ($: CheerioStatic, mangaId: string): Chapter[] =
     })
 }
 
-export const parseChapterDetails = ($: CheerioStatic, mangaId: string, chapterId: string): ChapterDetails => {
+export const parseChapterDetails = ($: CheerioAPI, mangaId: string, chapterId: string): ChapterDetails => {
     // Get all of the pages
-    const scriptObj = $('script').toArray().find((obj: CheerioElement) => {
-        const data = obj.children[0]?.data ?? ''
+    const scriptObj = $('script').toArray().find((obj: Element) => {
+        const childObj = obj.children?.[0]
+        if (childObj === undefined) {
+            return false
+        }
+
+        const data = ('data' in childObj) ? childObj.data : ''
         return data.includes('batoPass') && data.includes('batoWord')
     })
-    const script = scriptObj?.children[0]?.data ?? ''
+    const childObj = scriptObj?.children[0]
+    const script = (childObj !== undefined && 'data' in childObj) ? childObj.data : ''
 
-    const batoPass = eval(script.match(/const\s+batoPass\s*=\s*(.*?);/)?.[1] ?? '').toString()
+    const batoPass = eval(script.match(/const\s+batoPass\s*=\s*(.*?);/)?.[1] ?? '')?.toString() ?? ''
     const batoWord = script.match(/const\s+batoWord\s*=\s*"(.*)";/)?.[1] ?? ''
     const imgHttps = script.match(/const\s+imgHttps\s*=\s*(.*?);/)?.[1] ?? ''
 
@@ -152,7 +161,7 @@ export const parseChapterDetails = ($: CheerioStatic, mangaId: string, chapterId
     return chapterDetails
 }
 
-export const parseHomeSections = ($: CheerioStatic, sectionCallback: (section: HomeSection) => void): void => {
+export const parseHomeSections = ($: CheerioAPI, sectionCallback: (section: HomeSection) => void): void => {
     const popularSection = App.createHomeSection({
         id: 'popular_updates',
         title: 'Popular Updates',
@@ -175,7 +184,7 @@ export const parseHomeSections = ($: CheerioStatic, sectionCallback: (section: H
         const id = $('a', manga).attr('href')?.replace('/series/', '')?.trim().split('/')[0] ?? ''
         const btcode = $('em', manga).attr('data-lang')
         const lang: string = btcode ? BTLanguages.getLangCode(btcode) : '🇬🇧'
-        const subtitle: string = lang + ' ' + $('.item-volch', manga).text().trim() ?? lang
+        const subtitle: string = lang + ' ' + $('.item-volch', manga).text().trim()
 
         if (!id || !title) continue
         popularSection_Array.push(App.createPartialSourceManga({
@@ -196,7 +205,7 @@ export const parseHomeSections = ($: CheerioStatic, sectionCallback: (section: H
         const id = $('a', manga).attr('href')?.replace('/series/', '')?.trim().split('/')[0] ?? ''
         const btcode = $('em', manga).attr('data-lang')
         const lang: string = btcode ? BTLanguages.getLangCode(btcode) : '🇬🇧'
-        const subtitle: string = lang + ' ' + $('.item-volch a', manga).text().trim() ?? lang
+        const subtitle: string = lang + ' ' + $('.item-volch a', manga).text().trim()
 
         if (!id || !title) continue
         latestSection_Array.push(App.createPartialSourceManga({
@@ -210,7 +219,7 @@ export const parseHomeSections = ($: CheerioStatic, sectionCallback: (section: H
     sectionCallback(latestSection)
 }
 
-export const parseViewMore = ($: CheerioStatic): PartialSourceManga[] => {
+export const parseViewMore = ($: CheerioAPI): PartialSourceManga[] => {
     const manga: PartialSourceManga[] = []
     const collectedIds: string[] = []
 
@@ -247,7 +256,7 @@ export const parseTags = (): TagSection[] => {
     return tagSections
 }
 
-export const parseSearch = ($: CheerioStatic, langFilter: boolean, langs: string[]): PartialSourceManga[] => {
+export const parseSearch = ($: CheerioAPI, langFilter: boolean, langs: string[]): PartialSourceManga[] => {
     const mangas: PartialSourceManga[] = []
     for (const obj of $('.item', '#series-list').toArray()) {
         const id = $('.item-cover', obj).attr('href')?.replace('/series/', '')?.trim().split('/')[0] ?? ''
@@ -270,11 +279,11 @@ export const parseSearch = ($: CheerioStatic, langFilter: boolean, langs: string
     return mangas
 }
 
-export const parseThumbnailUrl = ($: CheerioStatic): string => {
+export const parseThumbnailUrl = ($: CheerioAPI): string => {
     return $('div.attr-cover img').attr('src') ?? ''
 }
 
-export const isLastPage = ($: CheerioStatic): boolean => {
+export const isLastPage = ($: CheerioAPI): boolean => {
     return $('.page-item').last().hasClass('disabled')
 }
 
