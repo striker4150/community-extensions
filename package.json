@@ -1,8 +1,8 @@
 {
-  "name": "community-extensions",
+  "name": "striker4150-extensions",
   "version": "0.8.0",
-  "repositoryName": "Paperback Community Extensions (0.8)",
-  "description": "Community maintained Paperback extension repository",
+  "repositoryName": "striker4150's Extensions (0.8)",
+  "description": "A Paperback extension repository based on Paperback Community Extensions (0.8), with some minor adjustments",
   "main": "index.js",
   "scripts": {
     "bundle": "npx paperback bundle",
@@ -11,7 +11,7 @@
     "test": "npx paperback test",
     "nodemon": "nodemon"
   },
-  "author": "Netsky",
+  "author": "striker4150",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@tsconfig/recommended": "^1.0.1",
