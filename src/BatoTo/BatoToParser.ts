@@ -18,7 +18,19 @@ import { CheerioAPI } from 'cheerio'
 import CryptoJS from 'crypto-js'
 import { Element } from 'domhandler'
 
+import Url = require('url-parse')
+
 import entities = require('entities')
+
+const replaceImgServers = new Map([
+    ['k00', 'n00'],
+    ['k01', 'n03'],
+    ['k02', 'n04'],
+    ['k04', 'n07'],
+    ['k05', 'n09'],
+    ['k08', 'n12'],
+    ['k09', 'n16'],
+])
 
 export const parseMangaDetails = ($: CheerioAPI, mangaId: string): SourceManga => {
     const titles: string[] = []
@@ -151,7 +163,18 @@ export const parseChapterDetails = ($: CheerioAPI, mangaId: string, chapterId: s
     const imgList: string[] = JSON.parse(imgHttps)
     const tknList: string[] = JSON.parse(CryptoJS.AES.decrypt(batoWord, batoPass).toString(CryptoJS.enc.Utf8))
 
-    const pages = imgList.map((value: string, index: number) => `${value}?${tknList[index]}`)
+    const fixedImgSources = imgList.map((value: string) => {
+        const imgUrl = new Url(value)
+        for (const [badImgServer, newImgServer] of replaceImgServers) {
+            const invalidHostname = imgUrl.hostname
+            const newHostname = invalidHostname.replace(badImgServer, newImgServer)
+
+            imgUrl.set('hostname', newHostname)
+        }
+
+        return imgUrl.toString()
+    })
+    const pages = fixedImgSources.map((value: string, index: number) => `${value}?${tknList[index]}`)
 
     const chapterDetails = App.createChapterDetails({
         id: chapterId,

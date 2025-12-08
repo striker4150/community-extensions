@@ -5,6 +5,7 @@ A repo with Paperback sources!
 Copyright (c) 2025 TheNetsky / the Paperback Community
 
 Modifications made by striker4150:
+2025-12-07: Replace non-functioning BatoTo image servers
 2025-11-27: Update the BatoTo extension's domain
 
 This program is free software: you can redistribute it and/or modify
