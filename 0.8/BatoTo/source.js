@@ -9003,14 +9003,14 @@ var _Sources = (() => {
   };
 
   // src/BatoTo/BatoTo.ts
-  var BATO_DOMAIN = "https://bato.to";
+  var BATO_DOMAIN = "https://xbato.com";
   var BatoToInfo = {
     version: "3.1.6-striker4150",
     name: "BatoTo",
     icon: "icon.png",
     author: "niclimcy",
     authorWebsite: "https://github.com/niclimcy",
-    description: "Extension that pulls manga from bato.to",
+    description: "Extension that pulls manga from xbato.com",
     contentRating: import_types2.ContentRating.MATURE,
     websiteBaseURL: BATO_DOMAIN,
     sourceTags: [
