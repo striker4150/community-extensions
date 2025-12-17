@@ -1,3 +1,55 @@
+interface Domain {
+    name: string;
+    domain: string;
+}
+
+const DEFAULT_BATO_DOMAIN: Domain = {
+    name: 'xbato.com',
+    domain: 'https://xbato.com',
+};
+
+class BTDomainsClass {
+    Domains: Domain[] = [
+        DEFAULT_BATO_DOMAIN,
+        {
+            name: 'bato.to',
+            domain: 'https://bato.to',
+        },
+        {
+            name: 'battwo.com',
+            domain: 'https://battwo.com',
+        },
+        {
+            name: 'batocomic.org',
+            domain: 'https://batocomic.org',
+        },
+        {
+            name: 'hto.to',
+            domain: 'https://hto.to',
+        },
+        {
+            name: 'wto.to',
+            domain: 'https://wto.to',
+        },
+        {
+            name: 'mangatoto.com',
+            domain: 'https://mangatoto.com',
+        },
+    ]
+
+    getDomainList(): string[] {
+        return this.Domains.map(Domain => Domain.domain)
+    }
+    getName(domain: string): string {
+        return this.Domains.filter(Domain => Domain.domain == domain)[0]?.name ?? 'Unknown'
+    }
+    getDefault(): Domain {
+        return DEFAULT_BATO_DOMAIN
+    }
+}
+
+export const BTDomains = new BTDomainsClass()
+
 interface Genre {
     name: string;
     param: string;

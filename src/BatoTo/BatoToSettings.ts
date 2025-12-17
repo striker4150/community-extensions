@@ -5,8 +5,42 @@ import {
 } from '@paperback/types'
 
 import {
+    BTDomains,
     BTLanguages
 } from './BatoToHelper'
+
+export const getDomainSetting = async (stateManager: SourceStateManager): Promise<string> => {
+    return (await stateManager.retrieve('domain') ?? BTDomains.getDefault().domain)
+}
+
+export const serverSettings = (stateManager: SourceStateManager): DUINavigationButton => {
+    return App.createDUINavigationButton({
+        id: 'server_settings',
+        label: 'Server Settings',
+        form: App.createDUIForm({
+            sections: async () => [
+                App.createDUISection({
+                    id: 'content',
+                    footer: 'The selected Bato domain.',
+                    isHidden: false,
+                    rows: async () => [
+                        App.createDUISelect({
+                            id: 'domain',
+                            label: 'Domain',
+                            options: BTDomains.getDomainList(),
+                            labelResolver: async (option) => BTDomains.getName(option),
+                            value: App.createDUIBinding({
+                                get: () => getDomainSetting(stateManager),
+                                set: async (newValue) => await stateManager.store('domain', newValue)
+                            }),
+                            allowsMultiselect: false,
+                        }),
+                    ]
+                })
+            ]
+        })
+    })
+}
 
 const getLanguages = async (stateManager: SourceStateManager): Promise<string[]> => {
     return (await stateManager.retrieve('languages') ?? BTLanguages.getDefault())

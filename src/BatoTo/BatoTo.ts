@@ -34,26 +34,29 @@ import {
 } from './BatoToParser'
 
 import {
+    BTDomains,
     BTLanguages,
     Metadata
 } from './BatoToHelper'
 
 import {
+    getDomainSetting,
     languageSettings,
-    resetSettings
+    resetSettings,
+    serverSettings
 } from './BatoToSettings'
 
-const BATO_DOMAIN = 'https://xbato.com'
+const DEFAULT_DOMAIN = BTDomains.getDefault()
 
 export const BatoToInfo: SourceInfo = {
-    version: '3.1.6-striker4150',
+    version: '3.1.7-striker4150',
     name: 'BatoTo',
     icon: 'icon.png',
     author: 'niclimcy',
     authorWebsite: 'https://github.com/niclimcy',
-    description: 'Extension that pulls manga from xbato.com',
+    description: `Extension that pulls manga from BatoTo`,
     contentRating: ContentRating.MATURE,
-    websiteBaseURL: BATO_DOMAIN,
+    websiteBaseURL: DEFAULT_DOMAIN.domain,
     sourceTags: [
         {
             text: 'Multi Language',
@@ -67,15 +70,19 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
 
     constructor(private cheerio: cheerio.CheerioAPI) { }
 
+    stateManager = App.createSourceStateManager()
+
     requestManager = App.createRequestManager({
         requestsPerSecond: 4,
         requestTimeout: 15000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
+                const domain = String(await getDomainSetting(this.stateManager))
+
                 request.headers = {
                     ...(request.headers ?? {}),
                     ...{
-                        'referer': `${BATO_DOMAIN}/`,
+                        'referer': `${domain}/`,
                         'user-agent': await this.requestManager.getDefaultUserAgent()
                     }
                 }
@@ -91,25 +98,26 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
         }
     });
 
-    stateManager = App.createSourceStateManager()
-
     async getSourceMenu(): Promise<DUISection> {
         return Promise.resolve(App.createDUISection({
             id: 'main',
             header: 'Source Settings',
             isHidden: false,
             rows: async () => [
+                serverSettings(this.stateManager),
                 languageSettings(this.stateManager),
                 resetSettings(this.stateManager)
             ]
         }))
     }
 
-    getMangaShareUrl(mangaId: string): string { return `${BATO_DOMAIN}/series/${mangaId}` }
+    getMangaShareUrl(mangaId: string): string { return `${DEFAULT_DOMAIN.domain}/series/${mangaId}` }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}/series/${mangaId}`,
+            url: `${domain}/series/${mangaId}`,
             method: 'GET'
         })
 
@@ -120,8 +128,10 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}/series/${mangaId}`,
+            url: `${domain}/series/${mangaId}`,
             method: 'GET'
         })
 
@@ -132,8 +142,10 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
     }
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}/chapter/${chapterId}`,
+            url: `${domain}/chapter/${chapterId}`,
             method: 'GET'
         })
 
@@ -144,8 +156,10 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}`,
+            url: `${domain}`,
             method: 'GET'
         })
 
@@ -174,8 +188,10 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
         const langs: string[] = await this.stateManager.retrieve('languages') ?? BTLanguages.getDefault()
         param += langHomeFilter ? `&langs=${langs.join(',')}` : ''
 
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}/browse`,
+            url: `${domain}/browse`,
             method: 'GET',
             param
         })
@@ -196,16 +212,18 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
         const page: number = metadata?.page ?? 1
         let request
 
+        const domain = String(await getDomainSetting(this.stateManager))
+
         // Regular search
         if (query.title) {
             request = App.createRequest({
-                url: `${BATO_DOMAIN}/search?word=${encodeURI(query.title ?? '')}&page=${page}`,
+                url: `${domain}/search?word=${encodeURI(query.title ?? '')}&page=${page}`,
                 method: 'GET'
             })
             // Tag Search
         } else {
             request = App.createRequest({
-                url: `${BATO_DOMAIN}/browse?genres=${query?.includedTags?.map((x: Tag) => x.id)[0]}&page=${page}`,
+                url: `${domain}/browse?genres=${query?.includedTags?.map((x: Tag) => x.id)[0]}&page=${page}`,
                 method: 'GET'
             })
         }
@@ -229,8 +247,10 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
     }
 
     async getThumbnailUrl(mangaId: string): Promise<string> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         const request = App.createRequest({
-            url: `${BATO_DOMAIN}/series/${mangaId}`,
+            url: `${domain}/series/${mangaId}`,
             method: 'GET'
         })
 
@@ -247,11 +267,13 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
     }
 
     async getCloudflareBypassRequestAsync(): Promise<Request> {
+        const domain = String(await getDomainSetting(this.stateManager))
+
         return App.createRequest({
-            url: BATO_DOMAIN,
+            url: domain,
             method: 'GET',
             headers: {
-                'referer': `${BATO_DOMAIN}/`,
+                'referer': `${domain}/`,
                 'user-agent': await this.requestManager.getDefaultUserAgent()
             }
         })
