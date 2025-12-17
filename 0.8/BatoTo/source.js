@@ -8019,6 +8019,51 @@ var _Sources = (() => {
   var import_types = __toESM(require_lib());
 
   // src/BatoTo/BatoToHelper.ts
+  var DEFAULT_BATO_DOMAIN = {
+    name: "xbato.com",
+    domain: "https://xbato.com"
+  };
+  var BTDomainsClass = class {
+    constructor() {
+      this.Domains = [
+        DEFAULT_BATO_DOMAIN,
+        {
+          name: "bato.to",
+          domain: "https://bato.to"
+        },
+        {
+          name: "battwo.com",
+          domain: "https://battwo.com"
+        },
+        {
+          name: "batocomic.org",
+          domain: "https://batocomic.org"
+        },
+        {
+          name: "hto.to",
+          domain: "https://hto.to"
+        },
+        {
+          name: "wto.to",
+          domain: "https://wto.to"
+        },
+        {
+          name: "mangatoto.com",
+          domain: "https://mangatoto.com"
+        }
+      ];
+    }
+    getDomainList() {
+      return this.Domains.map((Domain) => Domain.domain);
+    }
+    getName(domain) {
+      return this.Domains.filter((Domain) => Domain.domain == domain)[0]?.name ?? "Unknown";
+    }
+    getDefault() {
+      return DEFAULT_BATO_DOMAIN;
+    }
+  };
+  var BTDomains = new BTDomainsClass();
   var BTGenresClass = class {
     constructor() {
       this.Genres = [
@@ -8935,6 +8980,37 @@ var _Sources = (() => {
   };
 
   // src/BatoTo/BatoToSettings.ts
+  var getDomainSetting = async (stateManager) => {
+    return await stateManager.retrieve("domain") ?? BTDomains.getDefault().domain;
+  };
+  var serverSettings = (stateManager) => {
+    return App.createDUINavigationButton({
+      id: "server_settings",
+      label: "Server Settings",
+      form: App.createDUIForm({
+        sections: async () => [
+          App.createDUISection({
+            id: "content",
+            footer: "The selected Bato domain.",
+            isHidden: false,
+            rows: async () => [
+              App.createDUISelect({
+                id: "domain",
+                label: "Domain",
+                options: BTDomains.getDomainList(),
+                labelResolver: async (option) => BTDomains.getName(option),
+                value: App.createDUIBinding({
+                  get: () => getDomainSetting(stateManager),
+                  set: async (newValue) => await stateManager.store("domain", newValue)
+                }),
+                allowsMultiselect: false
+              })
+            ]
+          })
+        ]
+      })
+    });
+  };
   var getLanguages = async (stateManager) => {
     return await stateManager.retrieve("languages") ?? BTLanguages.getDefault();
   };
@@ -9003,16 +9079,16 @@ var _Sources = (() => {
   };
 
   // src/BatoTo/BatoTo.ts
-  var BATO_DOMAIN = "https://xbato.com";
+  var DEFAULT_DOMAIN = BTDomains.getDefault();
   var BatoToInfo = {
-    version: "3.1.6-striker4150",
+    version: "3.1.7-striker4150",
     name: "BatoTo",
     icon: "icon.png",
     author: "niclimcy",
     authorWebsite: "https://github.com/niclimcy",
-    description: "Extension that pulls manga from xbato.com",
+    description: `Extension that pulls manga from BatoTo`,
     contentRating: import_types2.ContentRating.MATURE,
-    websiteBaseURL: BATO_DOMAIN,
+    websiteBaseURL: DEFAULT_DOMAIN.domain,
     sourceTags: [
       {
         text: "Multi Language",
@@ -9024,15 +9100,17 @@ var _Sources = (() => {
   var BatoTo = class _BatoTo {
     constructor(cheerio) {
       this.cheerio = cheerio;
+      this.stateManager = App.createSourceStateManager();
       this.requestManager = App.createRequestManager({
         requestsPerSecond: 4,
         requestTimeout: 15e3,
         interceptor: {
           interceptRequest: async (request) => {
+            const domain = String(await getDomainSetting(this.stateManager));
             request.headers = {
               ...request.headers ?? {},
               ...{
-                "referer": `${BATO_DOMAIN}/`,
+                "referer": `${domain}/`,
                 "user-agent": await this.requestManager.getDefaultUserAgent()
               }
             };
@@ -9047,7 +9125,6 @@ var _Sources = (() => {
           }
         }
       });
-      this.stateManager = App.createSourceStateManager();
     }
     async getSourceMenu() {
       return Promise.resolve(App.createDUISection({
@@ -9055,17 +9132,19 @@ var _Sources = (() => {
         header: "Source Settings",
         isHidden: false,
         rows: async () => [
+          serverSettings(this.stateManager),
           languageSettings(this.stateManager),
           resetSettings(this.stateManager)
         ]
       }));
     }
     getMangaShareUrl(mangaId2) {
-      return `${BATO_DOMAIN}/series/${mangaId2}`;
+      return `${DEFAULT_DOMAIN.domain}/series/${mangaId2}`;
     }
     async getMangaDetails(mangaId2) {
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}/series/${mangaId2}`,
+        url: `${domain}/series/${mangaId2}`,
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
@@ -9074,8 +9153,9 @@ var _Sources = (() => {
       return parseMangaDetails($2, mangaId2);
     }
     async getChapters(mangaId2) {
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}/series/${mangaId2}`,
+        url: `${domain}/series/${mangaId2}`,
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
@@ -9084,8 +9164,9 @@ var _Sources = (() => {
       return parseChapterList($2, mangaId2);
     }
     async getChapterDetails(mangaId2, chapterId2) {
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}/chapter/${chapterId2}`,
+        url: `${domain}/chapter/${chapterId2}`,
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
@@ -9094,8 +9175,9 @@ var _Sources = (() => {
       return parseChapterDetails($2, mangaId2, chapterId2);
     }
     async getHomePageSections(sectionCallback) {
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}`,
+        url: `${domain}`,
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
@@ -9119,8 +9201,9 @@ var _Sources = (() => {
       const langHomeFilter = await this.stateManager.retrieve("language_home_filter") ?? false;
       const langs = await this.stateManager.retrieve("languages") ?? BTLanguages.getDefault();
       param += langHomeFilter ? `&langs=${langs.join(",")}` : "";
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}/browse`,
+        url: `${domain}/browse`,
         method: "GET",
         param
       });
@@ -9137,14 +9220,15 @@ var _Sources = (() => {
     async getSearchResults(query, metadata) {
       const page = metadata?.page ?? 1;
       let request;
+      const domain = String(await getDomainSetting(this.stateManager));
       if (query.title) {
         request = App.createRequest({
-          url: `${BATO_DOMAIN}/search?word=${encodeURI(query.title ?? "")}&page=${page}`,
+          url: `${domain}/search?word=${encodeURI(query.title ?? "")}&page=${page}`,
           method: "GET"
         });
       } else {
         request = App.createRequest({
-          url: `${BATO_DOMAIN}/browse?genres=${query?.includedTags?.map((x) => x.id)[0]}&page=${page}`,
+          url: `${domain}/browse?genres=${query?.includedTags?.map((x) => x.id)[0]}&page=${page}`,
           method: "GET"
         });
       }
@@ -9163,8 +9247,9 @@ var _Sources = (() => {
       return parseTags();
     }
     async getThumbnailUrl(mangaId2) {
+      const domain = String(await getDomainSetting(this.stateManager));
       const request = App.createRequest({
-        url: `${BATO_DOMAIN}/series/${mangaId2}`,
+        url: `${domain}/series/${mangaId2}`,
         method: "GET"
       });
       const response = await this.requestManager.schedule(request, 1);
@@ -9179,11 +9264,12 @@ Please go to the homepage of <${_BatoTo.name}> and press the cloud icon.`);
       }
     }
     async getCloudflareBypassRequestAsync() {
+      const domain = String(await getDomainSetting(this.stateManager));
       return App.createRequest({
-        url: BATO_DOMAIN,
+        url: domain,
         method: "GET",
         headers: {
-          "referer": `${BATO_DOMAIN}/`,
+          "referer": `${domain}/`,
           "user-agent": await this.requestManager.getDefaultUserAgent()
         }
       });
