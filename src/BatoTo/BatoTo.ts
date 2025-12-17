@@ -43,7 +43,7 @@ import {
     resetSettings
 } from './BatoToSettings'
 
-const BATO_DOMAIN = 'https://bato.to'
+const BATO_DOMAIN = 'https://xbato.com'
 
 export const BatoToInfo: SourceInfo = {
     version: '3.1.6-striker4150',
@@ -51,7 +51,7 @@ export const BatoToInfo: SourceInfo = {
     icon: 'icon.png',
     author: 'niclimcy',
     authorWebsite: 'https://github.com/niclimcy',
-    description: 'Extension that pulls manga from bato.to',
+    description: 'Extension that pulls manga from xbato.com',
     contentRating: ContentRating.MATURE,
     websiteBaseURL: BATO_DOMAIN,
     sourceTags: [
