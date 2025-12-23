@@ -8050,11 +8050,261 @@ var _Sources = (() => {
         {
           name: "mangatoto.com",
           domain: "https://mangatoto.com"
+        },
+        {
+          name: "ato.to",
+          domain: "https://ato.to",
+          extra: true
+        },
+        {
+          name: "dto.to",
+          domain: "https://dto.to",
+          extra: true
+        },
+        {
+          name: "fto.to",
+          domain: "https://fto.to",
+          extra: true
+        },
+        {
+          name: "jto.to",
+          domain: "https://jto.to",
+          extra: true
+        },
+        {
+          name: "lto.to",
+          domain: "https://lto.to",
+          extra: true
+        },
+        {
+          name: "mto.to",
+          domain: "https://mto.to",
+          extra: true
+        },
+        {
+          name: "nto.to",
+          domain: "https://nto.to",
+          extra: true
+        },
+        {
+          name: "vto.to",
+          domain: "https://vto.to",
+          extra: true
+        },
+        {
+          name: "xto.to",
+          domain: "https://xto.to",
+          extra: true
+        },
+        {
+          name: "yto.to",
+          domain: "https://yto.to",
+          extra: true
+        },
+        {
+          name: "vba.to",
+          domain: "https://vba.to",
+          extra: true
+        },
+        {
+          name: "wba.to",
+          domain: "https://wba.to",
+          extra: true
+        },
+        {
+          name: "xba.to",
+          domain: "https://xba.to",
+          extra: true
+        },
+        {
+          name: "yba.to",
+          domain: "https://yba.to",
+          extra: true
+        },
+        {
+          name: "zba.to",
+          domain: "https://zba.to",
+          extra: true
+        },
+        {
+          name: "bato.ac",
+          domain: "https://bato.ac",
+          extra: true
+        },
+        {
+          name: "bato.bz",
+          domain: "https://bato.bz",
+          extra: true
+        },
+        {
+          name: "bato.cc",
+          domain: "https://bato.cc",
+          extra: true
+        },
+        {
+          name: "bato.cx",
+          domain: "https://bato.cx",
+          extra: true
+        },
+        {
+          name: "bato.id",
+          domain: "https://bato.id",
+          extra: true
+        },
+        {
+          name: "bato.pw",
+          domain: "https://bato.pw",
+          extra: true
+        },
+        {
+          name: "bato.sh",
+          domain: "https://bato.sh",
+          extra: true
+        },
+        {
+          name: "bato.vc",
+          domain: "https://bato.vc",
+          extra: true
+        },
+        {
+          name: "bato.day",
+          domain: "https://bato.day",
+          extra: true
+        },
+        {
+          name: "bato.red",
+          domain: "https://bato.red",
+          extra: true
+        },
+        {
+          name: "bato.run",
+          domain: "https://bato.run",
+          extra: true
+        },
+        {
+          name: "batoto.in",
+          domain: "https://batoto.in",
+          extra: true
+        },
+        {
+          name: "batoto.tv",
+          domain: "https://batoto.tv",
+          extra: true
+        },
+        {
+          name: "batotoo.com",
+          domain: "https://batotoo.com",
+          extra: true
+        },
+        {
+          name: "batotwo.com",
+          domain: "https://batotwo.com",
+          extra: true
+        },
+        {
+          name: "batpub.com",
+          domain: "https://batpub.com",
+          extra: true
+        },
+        {
+          name: "batread.com",
+          domain: "https://batread.com",
+          extra: true
+        },
+        {
+          name: "xbato.net",
+          domain: "https://xbato.net",
+          extra: true
+        },
+        {
+          name: "xbato.org",
+          domain: "https://xbato.org",
+          extra: true
+        },
+        {
+          name: "zbato.com",
+          domain: "https://zbato.com",
+          extra: true
+        },
+        {
+          name: "zbato.net",
+          domain: "https://zbato.net",
+          extra: true
+        },
+        {
+          name: "zbato.org",
+          domain: "https://zbato.org",
+          extra: true
+        },
+        {
+          name: "comiko.net",
+          domain: "https://comiko.net",
+          extra: true
+        },
+        {
+          name: "comiko.org",
+          domain: "https://comiko.org",
+          extra: true
+        },
+        {
+          name: "mangatoto.net",
+          domain: "https://mangatoto.net",
+          extra: true
+        },
+        {
+          name: "mangatoto.org",
+          domain: "https://mangatoto.org",
+          extra: true
+        },
+        {
+          name: "batocomic.com",
+          domain: "https://batocomic.com",
+          extra: true
+        },
+        {
+          name: "batocomic.net",
+          domain: "https://batocomic.net",
+          extra: true
+        },
+        {
+          name: "readtoto.com",
+          domain: "https://readtoto.com",
+          extra: true
+        },
+        {
+          name: "readtoto.net",
+          domain: "https://readtoto.net",
+          extra: true
+        },
+        {
+          name: "readtoto.org",
+          domain: "https://readtoto.org",
+          extra: true
+        },
+        {
+          name: "kuku.to",
+          domain: "https://kuku.to",
+          extra: true
+        },
+        {
+          name: "okok.to",
+          domain: "https://okok.to",
+          extra: true
+        },
+        {
+          name: "ruru.to",
+          domain: "https://ruru.to",
+          extra: true
+        },
+        {
+          name: "xdxd.to",
+          domain: "https://xdxd.to",
+          extra: true
         }
       ];
     }
-    getDomainList() {
-      return this.Domains.map((Domain) => Domain.domain);
+    getDomainList(showExtra = false) {
+      return this.Domains.filter((Domain) => Domain.extra === void 0 || showExtra && Domain.extra).map((Domain) => Domain.domain);
     }
     getName(domain) {
       return this.Domains.filter((Domain) => Domain.domain == domain)[0]?.name ?? "Unknown";
@@ -8983,6 +9233,9 @@ var _Sources = (() => {
   var getDomainSetting = async (stateManager) => {
     return await stateManager.retrieve("domain") ?? BTDomains.getDefault().domain;
   };
+  var getShowExtraDomainsSetting = async (stateManager) => {
+    return await stateManager.retrieve("show_extra_domains") ?? false;
+  };
   var serverSettings = (stateManager) => {
     return App.createDUINavigationButton({
       id: "server_settings",
@@ -8990,20 +9243,37 @@ var _Sources = (() => {
       form: App.createDUIForm({
         sections: async () => [
           App.createDUISection({
-            id: "content",
+            id: "main",
             footer: "The selected Bato domain.",
             isHidden: false,
+            rows: async () => {
+              const showExtraDomains = await getShowExtraDomainsSetting(stateManager);
+              return [
+                App.createDUISelect({
+                  id: "domain",
+                  label: "Domain",
+                  options: BTDomains.getDomainList(showExtraDomains),
+                  labelResolver: async (option) => BTDomains.getName(option),
+                  value: App.createDUIBinding({
+                    get: () => getDomainSetting(stateManager),
+                    set: async (newValue) => await stateManager.store("domain", newValue)
+                  }),
+                  allowsMultiselect: false
+                })
+              ];
+            }
+          }),
+          App.createDUISection({
+            id: "extra",
+            isHidden: false,
             rows: async () => [
-              App.createDUISelect({
-                id: "domain",
-                label: "Domain",
-                options: BTDomains.getDomainList(),
-                labelResolver: async (option) => BTDomains.getName(option),
+              App.createDUISwitch({
+                id: "show_extra_domains_switch",
+                label: "Show Extra Domains",
                 value: App.createDUIBinding({
-                  get: () => getDomainSetting(stateManager),
-                  set: async (newValue) => await stateManager.store("domain", newValue)
-                }),
-                allowsMultiselect: false
+                  get: () => getShowExtraDomainsSetting(stateManager),
+                  set: async (newValue) => await stateManager.store("show_extra_domains", newValue)
+                })
               })
             ]
           })
@@ -9081,7 +9351,7 @@ var _Sources = (() => {
   // src/BatoTo/BatoTo.ts
   var DEFAULT_DOMAIN = BTDomains.getDefault();
   var BatoToInfo = {
-    version: "3.1.7-striker4150",
+    version: "3.1.8-striker4150",
     name: "BatoTo",
     icon: "icon.png",
     author: "niclimcy",
