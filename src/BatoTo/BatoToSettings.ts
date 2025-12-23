@@ -13,6 +13,10 @@ export const getDomainSetting = async (stateManager: SourceStateManager): Promis
     return (await stateManager.retrieve('domain') ?? BTDomains.getDefault().domain)
 }
 
+export const getShowExtraDomainsSetting = async (stateManager: SourceStateManager): Promise<boolean> => {
+    return (await stateManager.retrieve('show_extra_domains') ?? false)
+}
+
 export const serverSettings = (stateManager: SourceStateManager): DUINavigationButton => {
     return App.createDUINavigationButton({
         id: 'server_settings',
@@ -20,23 +24,41 @@ export const serverSettings = (stateManager: SourceStateManager): DUINavigationB
         form: App.createDUIForm({
             sections: async () => [
                 App.createDUISection({
-                    id: 'content',
+                    id: 'main',
                     footer: 'The selected Bato domain.',
                     isHidden: false,
-                    rows: async () => [
-                        App.createDUISelect({
-                            id: 'domain',
-                            label: 'Domain',
-                            options: BTDomains.getDomainList(),
-                            labelResolver: async (option) => BTDomains.getName(option),
-                            value: App.createDUIBinding({
-                                get: () => getDomainSetting(stateManager),
-                                set: async (newValue) => await stateManager.store('domain', newValue)
+                    rows: async () => {
+                        const showExtraDomains = await getShowExtraDomainsSetting(stateManager)
+
+                        return [
+                            App.createDUISelect({
+                                id: 'domain',
+                                label: 'Domain',
+                                options: BTDomains.getDomainList(showExtraDomains),
+                                labelResolver: async (option) => BTDomains.getName(option),
+                                value: App.createDUIBinding({
+                                    get: () => getDomainSetting(stateManager),
+                                    set: async (newValue) => await stateManager.store('domain', newValue)
+                                }),
+                                allowsMultiselect: false,
                             }),
-                            allowsMultiselect: false,
+                        ]
+                    }
+                }),
+                App.createDUISection({
+                    id: 'extra',
+                    isHidden: false,
+                    rows: async () => [
+                        App.createDUISwitch({
+                            id: 'show_extra_domains_switch',
+                            label: 'Show Extra Domains',
+                            value: App.createDUIBinding({
+                                get: () => getShowExtraDomainsSetting(stateManager),
+                                set: async (newValue) => await stateManager.store('show_extra_domains', newValue)
+                            }),
                         }),
-                    ]
-                })
+                    ],
+                }),
             ]
         })
     })
