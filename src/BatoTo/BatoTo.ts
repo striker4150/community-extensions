@@ -257,7 +257,7 @@ export class BatoTo implements SearchResultsProviding, MangaProviding, ChapterPr
         const response = await this.requestManager.schedule(request, 1)
         this.CloudFlareError(response.status)
         const $ = this.cheerio.load(response.data as string)
-        return parseThumbnailUrl($)
+        return parseThumbnailUrl($).replace('https://k', 'https://n')
     }
 
     CloudFlareError(status: number): void {
