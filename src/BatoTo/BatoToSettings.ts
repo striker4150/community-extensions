@@ -127,6 +127,8 @@ export const resetSettings = (stateManager: SourceStateManager): DUIButton => {
         label: 'Reset to Default',
         onTap: async () => {
             await Promise.all([
+                stateManager.store('domain', [BTDomains.getDefault().domain]),
+                stateManager.store('show_extra_domains', false),
                 stateManager.store('languages', BTLanguages.getDefault()),
                 stateManager.store('language_home_filter', false),
                 stateManager.store('language_search_filter', false)
