@@ -9231,7 +9231,7 @@ var _Sources = (() => {
 
   // src/BatoTo/BatoToSettings.ts
   var getDomainSetting = async (stateManager) => {
-    return await stateManager.retrieve("domain") ?? BTDomains.getDefault().domain;
+    return await stateManager.retrieve("domain") ?? [BTDomains.getDefault().domain];
   };
   var getShowExtraDomainsSetting = async (stateManager) => {
     return await stateManager.retrieve("show_extra_domains") ?? false;
@@ -9340,6 +9340,8 @@ var _Sources = (() => {
       label: "Reset to Default",
       onTap: async () => {
         await Promise.all([
+          stateManager.store("domain", [BTDomains.getDefault().domain]),
+          stateManager.store("show_extra_domains", false),
           stateManager.store("languages", BTLanguages.getDefault()),
           stateManager.store("language_home_filter", false),
           stateManager.store("language_search_filter", false)
@@ -9351,7 +9353,7 @@ var _Sources = (() => {
   // src/BatoTo/BatoTo.ts
   var DEFAULT_DOMAIN = BTDomains.getDefault();
   var BatoToInfo = {
-    version: "3.1.8-striker4150",
+    version: "3.1.9-striker4150",
     name: "BatoTo",
     icon: "icon.png",
     author: "niclimcy",
@@ -9525,7 +9527,7 @@ var _Sources = (() => {
       const response = await this.requestManager.schedule(request, 1);
       this.CloudFlareError(response.status);
       const $2 = this.cheerio.load(response.data);
-      return parseThumbnailUrl($2);
+      return parseThumbnailUrl($2).replace("https://k", "https://n");
     }
     CloudFlareError(status) {
       if (status == 503 || status == 403) {
