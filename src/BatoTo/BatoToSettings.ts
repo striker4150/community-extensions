@@ -9,8 +9,8 @@ import {
     BTLanguages
 } from './BatoToHelper'
 
-export const getDomainSetting = async (stateManager: SourceStateManager): Promise<string> => {
-    return (await stateManager.retrieve('domain') ?? BTDomains.getDefault().domain)
+export const getDomainSetting = async (stateManager: SourceStateManager): Promise<string[]> => {
+    return (await stateManager.retrieve('domain') ?? [BTDomains.getDefault().domain])
 }
 
 export const getShowExtraDomainsSetting = async (stateManager: SourceStateManager): Promise<boolean> => {
