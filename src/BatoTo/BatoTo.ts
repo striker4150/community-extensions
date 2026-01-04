@@ -49,7 +49,7 @@ import {
 const DEFAULT_DOMAIN = BTDomains.getDefault()
 
 export const BatoToInfo: SourceInfo = {
-    version: '3.1.8-striker4150',
+    version: '3.1.9-striker4150',
     name: 'BatoTo',
     icon: 'icon.png',
     author: 'niclimcy',
